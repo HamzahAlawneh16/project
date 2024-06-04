@@ -1,0 +1,227 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class BankAccount {
+    private String accountNumber;
+    private String accountHolder;
+    private double balance;
+
+    public BankAccount(String accountNumber, String accountHolder, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.accountHolder = accountHolder;
+        this.balance = initialBalance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            JOptionPane.showMessageDialog(null, "Deposit successful. New balance: " + balance, "Deposit", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid amount. Deposit failed.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            JOptionPane.showMessageDialog(null, "Withdrawal successful. New balance: " + balance, "Withdrawal", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid amount or insufficient balance. Withdrawal failed.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void displayAccountInfo() {
+        JOptionPane.showMessageDialog(null, "Account Number: " + accountNumber
+                + "\nAccount Holder: " + accountHolder
+                + "\nBalance: " + balance, "Account Info", JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+class Bank {
+    private BankAccount[] accounts;
+    private int accountCount;
+
+    public Bank() {
+        accounts = new BankAccount[100]; //  Number of accounts fixed
+
+        accountCount = 0;
+    }
+
+    public void createAccount(String accountNumber, String accountHolder, double initialBalance) {
+        if (accountCount < accounts.length) {
+            BankAccount newAccount = new BankAccount(accountNumber, accountHolder, initialBalance);
+            accounts[accountCount++] = newAccount;
+            JOptionPane.showMessageDialog(null, "Account created successfully.", "Create Account", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Bank account limit reached.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public BankAccount findAccount(String accountNumber) {
+        for (int i = 0; i < accountCount; i++) {
+            if (accounts[i].getAccountNumber().equals(accountNumber)) {
+                return accounts[i];
+            }
+        }
+        return null;
+    }
+
+    public void deposit(String accountNumber, double amount) {
+        BankAccount account = findAccount(accountNumber);
+        if (account != null) {
+            account.deposit(amount);
+        } else {
+            JOptionPane.showMessageDialog(null, "Account not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void withdraw(String accountNumber, double amount) {
+        BankAccount account = findAccount(accountNumber);
+        if (account != null) {
+            account.withdraw(amount);
+        } else {
+            JOptionPane.showMessageDialog(null, "Account not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void displayAllAccounts() {
+        StringBuilder accountsInfo = new StringBuilder();
+        for (int i = 0; i < accountCount; i++) {
+            accountsInfo.append("Account Number: ").append(accounts[i].getAccountNumber())
+                        .append("\nAccount Holder: ").append(accounts[i].getAccountHolder())
+                        .append("\nBalance: ").append(accounts[i].getBalance())
+                        .append("\n-----------------------\n");
+        }
+        JOptionPane.showMessageDialog(null, accountsInfo.toString(), "All Accounts", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void displayBankInfo() {
+        JOptionPane.showMessageDialog(null, "Total number of accounts: " + accountCount 
+                + "\nTotal balance in the bank: " + getTotalBalance(), "Bank Info", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private double getTotalBalance() {
+        double totalBalance = 0;
+        for (int i = 0; i < accountCount; i++) {
+            totalBalance += accounts[i].getBalance();
+        }
+        return totalBalance;
+    }
+}
+
+public class Main {
+    private static Bank bank = new Bank();
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Banking Application");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(600, 400);
+
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+
+            JPanel headerPanel = new JPanel();
+            headerPanel.setBackground(new Color(52, 58, 64));
+            JLabel welcomeLabel = new JLabel("Welcome to the Bank!");
+            welcomeLabel.setForeground(Color.WHITE);
+            welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            headerPanel.add(welcomeLabel);
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new GridLayout(6, 1, 10, 10));
+            buttonPanel.setBackground(new Color(52, 58, 64)); 
+            Font buttonFont = new Font("Arial", Font.BOLD, 18); 
+
+            JButton createAccountButton = new JButton("Create Account");
+            JButton depositButton = new JButton("Deposit");
+            JButton withdrawButton = new JButton("Withdraw");
+            JButton displayAllAccountsButton = new JButton("Display All Accounts");
+            JButton displayBankInfoButton = new JButton("Display Bank Info");
+            JButton exitButton = new JButton("Exit");
+
+            createAccountButton.setFont(buttonFont);
+            depositButton.setFont(buttonFont);
+            withdrawButton.setFont(buttonFont);
+            displayAllAccountsButton.setFont(buttonFont);
+            displayBankInfoButton.setFont(buttonFont);
+            exitButton.setFont(buttonFont);
+
+            createAccountButton.setBackground(new Color(0, 123, 255));
+            createAccountButton.setForeground(Color.WHITE);
+            depositButton.setBackground(new Color(40, 167, 69));
+            depositButton.setForeground(Color.WHITE);
+            withdrawButton.setBackground(new Color(255, 193, 7));
+            withdrawButton.setForeground(Color.WHITE);
+            displayAllAccountsButton.setBackground(new Color(23, 162, 184));
+            displayAllAccountsButton.setForeground(Color.WHITE);
+            displayBankInfoButton.setBackground(new Color(108, 117, 125));
+            displayBankInfoButton.setForeground(Color.WHITE);
+            exitButton.setBackground(new Color(220, 53, 69));
+            exitButton.setForeground(Color.WHITE);
+
+            createAccountButton.setOpaque(true);
+            depositButton.setOpaque(true);
+            withdrawButton.setOpaque(true);
+            displayAllAccountsButton.setOpaque(true);
+            displayBankInfoButton.setOpaque(true);
+            exitButton.setOpaque(true);
+
+            createAccountButton.addActionListener(e -> createAccount());
+            depositButton.addActionListener(e -> deposit());
+            withdrawButton.addActionListener(e -> withdraw());
+            displayAllAccountsButton.addActionListener(e -> bank.displayAllAccounts());
+            displayBankInfoButton.addActionListener(e -> bank.displayBankInfo());
+            exitButton.addActionListener(e -> {
+                JOptionPane.showMessageDialog(frame, "Thank you for using our banking application!", "Goodbye", JOptionPane.INFORMATION_MESSAGE);
+                System.exit(0);
+            });
+
+            buttonPanel.add(createAccountButton);
+            buttonPanel.add(depositButton);
+            buttonPanel.add(withdrawButton);
+            buttonPanel.add(displayAllAccountsButton);
+            buttonPanel.add(displayBankInfoButton);
+            buttonPanel.add(exitButton);
+
+            panel.add(headerPanel, BorderLayout.NORTH);
+            panel.add(buttonPanel, BorderLayout.CENTER);
+
+            frame.add(panel);
+            frame.setVisible(true);
+        });
+    }
+
+    private static void createAccount() {
+        String accountNumber = JOptionPane.showInputDialog("Enter account number:");
+        String accountHolder = JOptionPane.showInputDialog("Enter account holder name:");
+        double initialBalance = Double.parseDouble(JOptionPane.showInputDialog("Enter initial balance:"));
+        bank.createAccount(accountNumber, accountHolder, initialBalance);
+    }
+
+    private static void deposit() {
+        String accountNumber = JOptionPane.showInputDialog("Enter account number:");
+        double depositAmount = Double.parseDouble(JOptionPane.showInputDialog("Enter deposit amount:"));
+        bank.deposit(accountNumber, depositAmount);
+    }
+
+    private static void withdraw() {
+        String accountNumber = JOptionPane.showInputDialog("Enter account number:");
+        double withdrawAmount = Double.parseDouble(JOptionPane.showInputDialog("Enter withdrawal amount:"));
+        bank.withdraw(accountNumber, withdrawAmount);
+    }
+}
